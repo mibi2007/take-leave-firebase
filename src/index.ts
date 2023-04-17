@@ -15,10 +15,9 @@ export const getAllApproves = functions.https.onRequest(async (request, response
   if (request.method === 'GET') {
     const data: QuerySnapshot = await admin
       .firestore()
-      .collection('approves').get();
+      .collection('approves').orderBy('createdAt').get();
     if (!data.empty) {
       const result = data.docs.filter((doc) => doc.exists).map((doc) => {
-        // functions.logger.info(doc.id);
         const result = doc.data();
         result.id = doc.id;
         return result;
@@ -54,18 +53,9 @@ export const xinNghiPhep = functions.https.onRequest(async (request, response) =
     const days = request.body.days;
     const fromTime = request.body.fromTime;
     const toTime = request.body.toTime;
-    // const missionFromDate = request.body.missionFromDate;
-    // const missionToDate = request.body.missionToDate;
-    // const missionFromTime = request.body.missionFromTime;
-    // const missionToTime = request.body.missionToTime;
     const onDate = request.body.onDate;
-    // const where = request.body.where;
 
     functions.logger.info('email', email);
-
-    const emailList = [
-      // 'samco.mailtn@gmail.com',
-      email];
     let confirmMail = '';
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let unitEmails: any[] = [];
@@ -150,22 +140,9 @@ export const xinNghiPhep = functions.https.onRequest(async (request, response) =
           <td><a style="color: #e91218; text-decodation:underline" href="https://xin-nghi-phep-7ff68.web.app/duyet-nghi-phep/${id}?reviewer=${confirmMail}">Xác nhận</a></td>
         </tr></table>`);
         const confirmHtml = htmlTemplate.replace('{{type}}', type).replace('{{table}}', confirmBody);
-        sendEmail(confirmMail, subject, confirmHtml, phongBan.xemTT);
+        sendEmail(confirmMail, subject, confirmHtml);
       });
-    // admin
-    //   .firestore()
-    //   .collection('mails')
-    //   .add({
-    //     to: email,
-    //     message: {
-    //       subject: subject,
-    //       text: subject,
-    //       html: html,
-    //     },
-    //     cc: ['binhhm2009@gmail.com', ...phongBan.xemTT ?? []],
-    //   })
-    //   .then(() => functions.logger.info('Queued email for delivery!'));
-    sendEmail(email, subject, html);
+    sendEmail(email, subject, html, phongBan.xemTT);
     response.send({ 'data': html });
     return;
   } else {
@@ -201,13 +178,8 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
     const days = form.days;
     const fromTime = form.fromTime;
     const toTime = form.toTime;
-    // const missionFromDate = form.missionFromDate;
-    // const missionToDate = form.missionToDate;
-    // const missionFromTime = form.missionFromTime;
-    // const missionToTime = form.missionToTime;
     const onDate = form.onDate;
     // const where = form.where;
-    // const changeReason = form.changeReason;
     const rejectReason = request.body.rejectReason ?? '';
 
     let subject = `${type} - ${name} - ${unit.id}`;
@@ -263,19 +235,17 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
       const data = pending.data();
       if (data == undefined) return;
       if (isApproved != undefined && !isApproved && pending.data() != undefined) {
-        // if (data != undefined) {
         // Reject at with date format yyy-mm-dd
         data.rejectedAt = new Date();
         data.rejectBy = reviewer;
         await admin.firestore().collection('rejects').doc(id).set(data);
-        // }
         await pendingRef.delete();
         subject = `Đã từ chối ${subject}`;
         const rejectHtml = html.replace('</table>', `<tr style='vertical-align: top;'>
           <td style='white-space:nowrap'>Lý do từ chối</td><td>${rejectReason}</td></tr>
         </tr></table>`);
-        sendEmail(email, subject, rejectHtml);
-        sendEmail(reviewer, subject, rejectHtml, form.unit.xemTT);
+        sendEmail(email, subject, rejectHtml, form.unit.xemTT);
+        sendEmail(reviewer, subject, rejectHtml);
         response.status(200).send({ data: 'Đã từ chối' });
         functions.logger.info(reviewer, 'reject');
         return;
@@ -289,8 +259,8 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
           await admin.firestore().collection('approves').doc(id).set(data);
           await pendingRef.delete();
           subject = `PGD đã duyệt ${subject}`;
-          sendEmail(email, subject, html);
-          sendEmail(reviewer, subject, html, form.unit.xemTT);
+          sendEmail(email, subject, html, form.unit.xemTT);
+          sendEmail(reviewer, subject, html);
           response.status(200).send({ data: 'PGD đã duyệt' });
           functions.logger.info(reviewer, 'approve1');
           return;
@@ -299,7 +269,7 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
             await pendingRef.update({
               approvedByQLPB: true,
             });
-            sendEmail(reviewer, subject, html);
+            sendEmail(reviewer, subject, html, form.unit.xemTT);
             const confirmBody = body.replace('</table>', `<tr>
               <td>Link xác nhận</td>
               <td><a style="color: #e91218; text-decodation:underline" href="https://xin-nghi-phep-7ff68.web.app/duyet-nghi-phep/${id}?reviewer=${form.unit.emailPGD}">Xác nhận</a></td>
@@ -309,11 +279,6 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
             response.status(200).send({ data: 'QLPB đã duyệt' });
             functions.logger.info(reviewer, 'approve3');
           }
-          // if (form.unit.emailPGD == reviewer) {
-          //   await pendingRef.update({
-          //     approvedByPGD: true,
-          //   });
-          // }
           return;
         }
       } else {
@@ -327,8 +292,8 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
         await admin.firestore().collection('approves').doc(id).set(data);
         await pendingRef.delete();
         subject = `Đã duyệt ${subject}`;
-        sendEmail(email, subject, html);
-        sendEmail(reviewer, subject, html, form.unit.xemTT);
+        sendEmail(email, subject, html, form.unit.xemTT);
+        sendEmail(reviewer, subject, html);
         response.status(200).send({ data: 'Đã duyệt' });
         functions.logger.info(reviewer, 'approve4');
         return;
