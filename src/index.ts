@@ -7,6 +7,36 @@ import * as functions from 'firebase-functions';
 //
 admin.initializeApp();
 
+export const getAllUnits = functions.https.onRequest(async (request, response) => {
+  response.set('Access-Control-Allow-Origin', '*');
+  response.set('Access-Control-Allow-Headers', 'Content-Type');
+  response.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  response.set('Content-Type', 'application/json; charset=utf-8');
+  if (request.method === 'GET') {
+    const data: QuerySnapshot = await admin
+      .firestore()
+      .collection('units').get();
+    if (!data.empty) {
+      const result = data.docs.filter((doc) => doc.exists).map((doc) => {
+        const result = doc.data();
+        result.id = doc.id;
+        return result;
+      });
+      response.status(200).json({ data: result });
+      return;
+    }
+    response.status(404).send('Not Found');
+    return;
+  } else {
+    if (request.method == 'OPTIONS') {
+      response.status(200).send('OK');
+      return;
+    }
+    response.status(405).send('Method Not Allowed');
+    return;
+  }
+});
+
 export const getAllApproves = functions.https.onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
   response.set('Access-Control-Allow-Headers', 'Content-Type');
@@ -142,7 +172,7 @@ export const xinNghiPhep = functions.https.onRequest(async (request, response) =
         const confirmHtml = htmlTemplate.replace('{{type}}', type).replace('{{table}}', confirmBody);
         sendEmail(confirmMail, subject, confirmHtml);
       });
-    sendEmail(email, subject, html, phongBan.xemTT);
+    sendEmail(email, subject, html, phongBan.xemTT, title == 'Trưởng Phòng/Trưởng Xưởng');
     response.send({ 'data': html });
     return;
   } else {
@@ -244,8 +274,8 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
         const rejectHtml = html.replace('</table>', `<tr style='vertical-align: top;'>
           <td style='white-space:nowrap'>Lý do từ chối</td><td>${rejectReason}</td></tr>
         </tr></table>`);
-        sendEmail(email, subject, rejectHtml, form.unit.xemTT);
-        sendEmail(reviewer, subject, rejectHtml);
+        sendEmail(email, subject, rejectHtml, form.unit.xemTT, title == 'Trưởng Phòng/Trưởng Xưởng');
+        sendEmail(reviewer, subject, rejectHtml, []);
         response.status(200).send({ data: 'Đã từ chối' });
         functions.logger.info(reviewer, 'reject');
         return;
@@ -258,10 +288,10 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
           data.approvedByPGD = true;
           await admin.firestore().collection('approves').doc(id).set(data);
           await pendingRef.delete();
-          subject = `PGD đã duyệt ${subject}`;
+          subject = `BGĐ đã duyệt ${subject}`;
           sendEmail(email, subject, html, form.unit.xemTT);
           sendEmail(reviewer, subject, html);
-          response.status(200).send({ data: 'PGD đã duyệt' });
+          response.status(200).send({ data: 'BGĐ đã duyệt' });
           functions.logger.info(reviewer, 'approve1');
           return;
         } else if (form.approvedByQLPB == false) {
@@ -292,7 +322,7 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
         await admin.firestore().collection('approves').doc(id).set(data);
         await pendingRef.delete();
         subject = `Đã duyệt ${subject}`;
-        sendEmail(email, subject, html, form.unit.xemTT);
+        sendEmail(email, subject, html, form.unit.xemTT, title == 'Trưởng Phòng/Trưởng Xưởng');
         sendEmail(reviewer, subject, html);
         response.status(200).send({ data: 'Đã duyệt' });
         functions.logger.info(reviewer, 'approve4');
@@ -418,8 +448,9 @@ const htmlTemplate = `
  * @param {string} subject
  * @param {string} html
  * @param {string[]} cc
+ * @param {boolean} isPGD
  */
-function sendEmail(email: string, subject: string, html: string, cc = []) {
+function sendEmail(email: string, subject: string, html: string, cc = [], isPGD = false) {
   admin
     .firestore()
     .collection('mails')
@@ -430,7 +461,7 @@ function sendEmail(email: string, subject: string, html: string, cc = []) {
         text: subject,
         html: html,
       },
-      cc: ['binhhm2009@gmail.com', ...cc],
+      cc: isPGD ? ['linhtnt@samco.com.vn', ...cc] : cc,
     })
     .then(() => functions.logger.info('Queued email for delivery!'));
 }
