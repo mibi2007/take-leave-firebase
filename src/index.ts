@@ -103,9 +103,9 @@ export const xinNghiPhep = functions.https.onRequest(async (request, response) =
     }
     const phongBan = unitEmails.find((u) => u.id == unit);
     let approvedByQLPB = false;
-    if (title == 'Nhân viên/KTV') {
+    if (title != 'Trưởng Phòng/Trưởng Xưởng') {
       confirmMail = phongBan.emailQLPB ? phongBan.emailQLPB : phongBan.emailPGD;
-    } else if (title != 'Nhân viên/KTV') {
+    } else if (title == 'Trưởng Phòng/Trưởng Xưởng') {
       confirmMail = phongBan.emailPGD;
       approvedByQLPB = true;
     }
@@ -281,7 +281,7 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
         return;
       }
 
-      if (title == 'Nhân viên/KTV' && days > 2) {
+      if (title != 'Trưởng Phòng/Trưởng Xưởng' && days > 2) {
         if (form.approvedByQLPB == true && reviewer == form.unit.emailPGD) {
           data.approvedAt = new Date();
           data.approvedBy = reviewer;
