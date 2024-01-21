@@ -45,7 +45,7 @@ export const getAllApproves = functions.https.onRequest(async (request, response
   if (request.method === 'GET') {
     const data: QuerySnapshot = await admin
       .firestore()
-      .collection('approves').orderBy('createdAt').get();
+      .collection('approves').orderBy('createdAt').where('createdAt', '>=', new Date('2024-01-01')).get();
     if (!data.empty) {
       const result = data.docs.filter((doc) => doc.exists).map((doc) => {
         const result = doc.data();
@@ -153,7 +153,7 @@ export const xinNghiPhep = functions.https.onRequest(async (request, response) =
       <tr style='vertical-align: top;'><td style='white-space:nowrap'>Nơi công tác</td><td>${reason}</td></tr>
     </table>`;
 
-    const body = type == 'Nghỉ phép' ? bodyNghiPhep : type == 'Điều chỉnh chấm công' ? bodyChamCong : bodyCongTac;
+    const body = (type == 'Nghỉ phép' || type == 'Nghỉ BHXH') ? bodyNghiPhep : type == 'Điều chỉnh chấm công' ? bodyChamCong : bodyCongTac;
 
     const html = htmlTemplate.replace('{{type}}', type).replace('{{table}}', body);
     const pendingData = { ...request.body, approvedByQLPB: approvedByQLPB, approvedByPGD: false, createdAt: new Date() };
@@ -255,7 +255,7 @@ export const duyetNghiPhep = functions.https.onRequest(async (request, response)
       <tr><td>Người duyệt</td><td>${reviewer}</td></tr>
     </table>`;
 
-    const body = type == 'Nghỉ phép' ? bodyNghiPhep : type == 'Điều chỉnh chấm công' ? bodyChamCong : bodyCongTac;
+    const body = (type == 'Nghỉ phép' || type == 'Nghỉ BHXH') ? bodyNghiPhep : type == 'Điều chỉnh chấm công' ? bodyChamCong : bodyCongTac;
 
     const html = htmlTemplate.replace('{{type}}', type).replace('{{table}}', body);
 
