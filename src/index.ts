@@ -1,13 +1,14 @@
 import * as admin from 'firebase-admin';
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import * as functions from 'firebase-functions';
+import { onRequest } from 'firebase-functions/https';
 
 // // Start writing functions
 // // https://firebase.google.com/docs/functions/typescript
 //
 admin.initializeApp();
 
-export const getAllUnits = functions.https.onRequest(async (request, response) => {
+const getAllUnits = onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
   response.set('Access-Control-Allow-Headers', 'Content-Type');
   response.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -37,15 +38,16 @@ export const getAllUnits = functions.https.onRequest(async (request, response) =
   }
 });
 
-export const getAllApproves = functions.https.onRequest(async (request, response) => {
+const getAllApproves = onRequest(async (request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
   response.set('Access-Control-Allow-Headers', 'Content-Type');
   response.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
   response.set('Content-Type', 'application/json; charset=utf-8');
   if (request.method === 'GET') {
+    const start = request.query.start != null ? request.query.start as string : '2023-01-01';
     const data: QuerySnapshot = await admin
       .firestore()
-      .collection('approves').orderBy('createdAt').where('createdAt', '>=', new Date('2024-01-01')).get();
+      .collection('approves').orderBy('createdAt').where('createdAt', '>=', new Date(start)).get();
     if (!data.empty) {
       const result = data.docs.filter((doc) => doc.exists).map((doc) => {
         const result = doc.data();
@@ -466,3 +468,5 @@ function sendEmail(email: string, subject: string, html: string, cc = [], isPGD 
     .then(() => functions.logger.info('Queued email for delivery!'));
 }
 
+exports.getAllUnits = getAllUnits;
+exports.getAllApproves = getAllApproves;

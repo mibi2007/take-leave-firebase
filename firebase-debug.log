@@ -1,0 +1,68 @@
+[debug] [2025-03-23T04:35:59.537Z] ----------------------------------------------------------------------
+[debug] [2025-03-23T04:35:59.539Z] Command:       C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions --inspect-functions
+[debug] [2025-03-23T04:35:59.540Z] CLI Version:   13.35.1
+[debug] [2025-03-23T04:35:59.540Z] Platform:      win32
+[debug] [2025-03-23T04:35:59.540Z] Node Version:  v22.14.0
+[debug] [2025-03-23T04:35:59.540Z] Time:          Sun Mar 23 2025 11:35:59 GMT+0700 (Indochina Time)
+[debug] [2025-03-23T04:35:59.540Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-03-23T04:35:59.797Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-03-23T04:35:59.798Z] > authorizing via signed-in user (binhhm2009@gmail.com)
+[info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
+[debug] [2025-03-23T04:35:59.827Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-03-23T04:35:59.828Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2025-03-23T04:35:59.835Z] [hub] writing locator at C:\Users\ADMIN\AppData\Local\Temp\hub-xin-nghi-phep.json
+[debug] [2025-03-23T04:35:59.874Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-03-23T04:35:59.874Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-03-23T04:35:59.874Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-03-23T04:35:59.874Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  functions: You are running the Functions emulator in debug mode. This means that functions will execute in sequence rather than in parallel. {"metadata":{"emulator":{"name":"functions"},"message":"You are running the Functions emulator in debug mode. This means that functions will execute in sequence rather than in parallel."}}
+[warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, auth, firestore, database, hosting, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, auth, firestore, database, hosting, pubsub, storage, dataconnect\u001b[22m"}}
+[warn] !  functions: Application Default Credentials detected. Non-emulated services will access production using these credentials. Be careful! {"metadata":{"emulator":{"name":"functions"},"message":"Application Default Credentials detected. Non-emulated services will access production using these credentials. Be careful!"}}
+[debug] [2025-03-23T04:36:01.384Z] Checked if tokens are valid: true, expires at: 1742706514859
+[debug] [2025-03-23T04:36:01.384Z] Checked if tokens are valid: true, expires at: 1742706514859
+[debug] [2025-03-23T04:36:01.385Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/xin-nghi-phep/adminSdkConfig [none]
+[debug] [2025-03-23T04:36:02.109Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/xin-nghi-phep/adminSdkConfig 200
+[debug] [2025-03-23T04:36:02.109Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/xin-nghi-phep/adminSdkConfig {"projectId":"xin-nghi-phep","storageBucket":"xin-nghi-phep.firebasestorage.app"}
+[info] i  functions: Watching "D:\Documents\MinhDuy\code\firebase\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"D:\\Documents\\MinhDuy\\code\\firebase\\functions\" for Cloud Functions..."}}
+[debug] [2025-03-23T04:36:02.141Z] Validating nodejs source
+[debug] [2025-03-23T04:36:03.151Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build:watch && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.2.0",
+    "firebase-functions": "^6.3.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2025-03-23T04:36:03.151Z] Building nodejs source
+[debug] [2025-03-23T04:36:03.152Z] Failed to find version of module node: reached end of search path D:\Documents\MinhDuy\code\firebase\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[debug] [2025-03-23T04:36:03.154Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-03-23T04:36:03.161Z] Found firebase-functions binary at 'D:\Documents\MinhDuy\code\firebase\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8104
+
+[debug] [2025-03-23T04:36:03.877Z] Got response from /__/functions.yaml {"endpoints":{"xinNghiPhep":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"xinNghiPhep"},"duyetNghiPhep":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"duyetNghiPhep"},"getAllUnits":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"getAllUnits"},"getAllApproves":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"getAllApproves"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}

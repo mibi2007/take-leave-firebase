@@ -1,13 +1,15 @@
 {
+  "compileOnSave": true,
+  "include": ["src"],
   "compilerOptions": {
     "module": "commonjs",
     "noImplicitReturns": true,
-    "noUnusedLocals": false,
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
-  },
-  "compileOnSave": true,
-  "include": ["src"]
+    "target": "es2017",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true
+  }
 }
